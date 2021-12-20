@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { hrtime } from "process";
 import { v1 as uuid } from "uuid";
 import { conflict, created, internalError } from "../../utils/httpStatusCodes";
-import prisma from "../../utils/prisma";
+import { prisma } from "../../utils/prisma";
 
 const signupController = async (req: Request, res: Response) => {
 	const functionName = "signupController";
