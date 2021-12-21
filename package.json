@@ -5,8 +5,8 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"dev": "ts-node src/index.ts",
-		"build": "tsc",
-		"start": "tsc && node build/index.js"
+		"build": "rimraf build && tsc",
+		"start": "rimraf build && tsc && node build/src/index.js"
 	},
 	"author": "Sree",
 	"license": "ISC",
@@ -23,6 +23,7 @@
 		"class-validator": "^0.13.2",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.2",
+		"rimraf": "^3.0.2",
 		"ts-node": "^10.4.0",
 		"uuid": "^8.3.2"
 	}
