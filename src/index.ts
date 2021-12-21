@@ -16,5 +16,9 @@ if (!port) {
 		console.log(`Server is running at ${port}`);
 	});
 
+	app.get("/", (req, res) => {
+		res.send("Hello World");
+	});
+
 	app.use("/user", userRouter);
 }
