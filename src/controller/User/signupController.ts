@@ -41,7 +41,7 @@ const signupController = async (req: Request, res: Response) => {
 				firstName,
 				lastName,
 				email,
-				userData: ""
+				userData
 			}
 		});
 		const createUserEnd = hrtime.bigint();

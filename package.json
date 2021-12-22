@@ -4,7 +4,7 @@
 	"description": "Auth Service for all of sree's projects",
 	"main": "src/index.ts",
 	"scripts": {
-		"dev": "ts-node src/index.ts",
+		"dev": "ts-node-dev src/index.ts",
 		"build": "rimraf build && tsc",
 		"start": "rimraf build && tsc && node build/index.js"
 	},
@@ -16,17 +16,17 @@
 		"@types/node": "^17.0.0",
 		"@types/uuid": "^8.3.3",
 		"prettier-plugin-prisma": "^3.6.0",
-		"prisma": "^3.7.0",
+		"prisma": "^3.6.0",
+		"ts-node-dev": "^1.1.8",
 		"typescript": "^4.5.4"
 	},
 	"dependencies": {
-		"@prisma/client": "^3.7.0",
+		"@prisma/client": "^3.6.0",
 		"class-validator": "^0.13.2",
 		"crypto-js": "^4.1.1",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.2",
 		"rimraf": "^3.0.2",
-		"ts-node": "^10.4.0",
 		"uuid": "^8.3.2"
 	}
 }
