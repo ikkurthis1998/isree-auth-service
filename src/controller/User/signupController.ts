@@ -3,6 +3,7 @@ import { hrtime } from "process";
 import { v1 as uuid } from "uuid";
 import { conflict, created, internalError } from "../../utils/httpStatusCodes";
 import { prisma } from "../../utils/prisma";
+import CryptoJS from "crypto-js";
 
 const signupController = async (req: Request, res: Response) => {
 	const functionName = "signupController";
@@ -29,13 +30,18 @@ const signupController = async (req: Request, res: Response) => {
 			});
 		}
 
+		const userData = CryptoJS.AES.encrypt(
+			JSON.stringify(firstName, lastName, email),
+			password
+		).toString();
+
 		const createUserStart = hrtime.bigint();
 		const user = await prisma.user.create({
 			data: {
 				firstName,
 				lastName,
 				email,
-				password
+				userData: ""
 			}
 		});
 		const createUserEnd = hrtime.bigint();
