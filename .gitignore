@@ -8,6 +8,9 @@
 # .env
 .env
 
+# certs
+*/certs
+
 # testing
 /coverage
 

@@ -10,6 +10,9 @@ import {
 	ok
 } from "../../utils/httpStatusCodes";
 import { prisma } from "../../utils/prisma";
+import jwt from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
 
 const signinController = async (req: Request, res: Response) => {
 	const functionName = "signinController";
@@ -29,10 +32,41 @@ const signinController = async (req: Request, res: Response) => {
 			if (data && data.length > 0) {
 				const userData = JSON.parse(data);
 				if (userData) {
+					const secret = fs.readFileSync(
+						path.resolve(__dirname, "../../certs/private.pem")
+					);
+					const roles = await prisma.userRole.findMany({
+						where: {
+							user: {
+								id: existingUser.id
+							}
+						}
+					});
+
+					const details = {
+						id: existingUser.id,
+						username: existingUser.username,
+						firstName: existingUser.firstName,
+						lastName: existingUser.lastName,
+						email: existingUser.email,
+						emailVerified: existingUser.emailVerified,
+						phone: existingUser.phone,
+						phoneVerified: existingUser.phoneVerified,
+						roles: roles.map((role) => role.role),
+						profilePicture: existingUser.profilePicture
+					};
+
+					const accessToken = jwt.sign(details, secret, {
+						expiresIn: "1h",
+						algorithm: "RS256"
+					});
 					return res.status(ok).json({
 						status: ok,
 						message: "User signed in successfully",
-						data: userData
+						data: {
+							details,
+							accessToken
+						}
 					});
 				}
 			}
