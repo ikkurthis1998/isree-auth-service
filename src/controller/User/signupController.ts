@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import { hrtime } from "process";
 import { v1 as uuid } from "uuid";
+import { encryptData } from "../../utils/crypto";
 import { conflict, created, internalError } from "../../utils/httpStatusCodes";
 import { prisma } from "../../utils/prisma";
-import CryptoJS from "crypto-js";
 
 const signupController = async (req: Request, res: Response) => {
 	const functionName = "signupController";
@@ -12,15 +11,11 @@ const signupController = async (req: Request, res: Response) => {
 	try {
 		const { firstName, lastName, email, password } = req.body;
 
-		const getUniqueStart = hrtime.bigint();
 		const existingUser = await prisma.user.findUnique({
 			where: {
 				email
 			}
 		});
-		const getUniqueEnd = hrtime.bigint();
-		const getUniqueDuration = Number(getUniqueEnd - getUniqueStart) / 1e6;
-		console.log(`getUniqueDuration: `, getUniqueDuration);
 
 		if (existingUser) {
 			return res.status(conflict).json({
@@ -30,12 +25,15 @@ const signupController = async (req: Request, res: Response) => {
 			});
 		}
 
-		const userData = CryptoJS.AES.encrypt(
-			JSON.stringify(firstName, lastName, email),
+		const userData = encryptData(
+			JSON.stringify({
+				firstName,
+				lastName,
+				email
+			}),
 			password
-		).toString();
+		);
 
-		const createUserStart = hrtime.bigint();
 		const user = await prisma.user.create({
 			data: {
 				firstName,
@@ -44,12 +42,7 @@ const signupController = async (req: Request, res: Response) => {
 				userData
 			}
 		});
-		const createUserEnd = hrtime.bigint();
-		const createUserDuration =
-			Number(createUserEnd - createUserStart) / 1e6;
-		console.log(`createDuration: `, createUserDuration);
 
-		const createUserRoleStart = hrtime.bigint();
 		const role = await prisma.userRole.create({
 			data: {
 				user: {
@@ -60,10 +53,6 @@ const signupController = async (req: Request, res: Response) => {
 				role: "USER"
 			}
 		});
-		const createUserRoleEnd = hrtime.bigint();
-		const createUserRoleDuration =
-			Number(createUserRoleEnd - createUserRoleStart) / 1e6;
-		console.log(`createUserRoleDuration: `, createUserRoleDuration);
 
 		return res.status(created).json({
 			status: created,
