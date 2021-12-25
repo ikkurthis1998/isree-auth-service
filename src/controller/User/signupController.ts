@@ -1,23 +1,31 @@
+import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
-import { encryptData } from "../../utils/crypto";
-import { conflict, created, internalError } from "../../utils/httpStatusCodes";
-import { prisma } from "../../utils/prisma";
+import {
+	badRequest,
+	conflict,
+	created,
+	internalError
+} from "../../utils/httpStatusCodes";
+import createUser from "../utils/user/createUser";
+import createUserRole from "../utils/userRole/createUserRole";
+import getUserRoles from "../utils/userRole/getUserRoles";
+import getUser from "../utils/user/getUser";
 
 const signupController = async (req: Request, res: Response) => {
 	const functionName = "signupController";
 	const traceId = uuid();
 
 	try {
-		const { firstName, lastName, email, password } = req.body;
+		const token = req.headers.token as string;
+		const { firstName, lastName, email, key } = req.body;
 
-		const existingUser = await prisma.user.findUnique({
-			where: {
-				email
-			}
-		});
+		const existingUser = await getUser({ email, traceId });
 
 		if (existingUser) {
+			console.log(
+				`${functionName} - ${traceId} - 409 - Conflict - User already exists`
+			);
 			return res.status(conflict).json({
 				status: conflict,
 				message: "User already exists",
@@ -25,45 +33,64 @@ const signupController = async (req: Request, res: Response) => {
 			});
 		}
 
-		const userData = encryptData(
-			JSON.stringify({
-				firstName,
-				lastName,
-				email
-			}),
-			password
+		const { status, message, data } = await createUser({
+			firstName,
+			lastName,
+			email,
+			key,
+			traceId
+		});
+
+		if (status === badRequest) {
+			console.log(
+				`${functionName} - ${traceId} - ${status} - Bad Request - ${message}`
+			);
+			return res.status(status).json({
+				status,
+				message,
+				data
+			});
+		}
+
+		const user = data as User;
+
+		await createUserRole({
+			userId: user.id,
+			role: "USER",
+			traceId
+		});
+
+		const roles = (
+			await getUserRoles({
+				userId: user.id,
+				traceId
+			})
+		).map((role) => role.role);
+
+		const userData = {
+			id: user.id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+			emailVerified: user.emailVerified,
+			phone: user.phone,
+			phoneVerified: user.phoneVerified,
+			profilePicture: user.profilePicture,
+			roles
+		};
+
+		console.log(
+			`${functionName} - ${traceId} - 201 - Created - User created successfully`
 		);
-
-		const user = await prisma.user.create({
-			data: {
-				firstName,
-				lastName,
-				email,
-				userData
-			}
-		});
-
-		const role = await prisma.userRole.create({
-			data: {
-				user: {
-					connect: {
-						id: user.id
-					}
-				},
-				role: "USER"
-			}
-		});
-
 		return res.status(created).json({
 			status: created,
 			message: "User created successfully",
-			data: {
-				...user,
-				...role
-			}
+			data: userData
 		});
 	} catch (error) {
-		console.log(`${functionName} ${traceId} ${error.message}`);
+		console.log(
+			`${functionName} - ${traceId} - 500 - Internal Error - ${error.message}`
+		);
 		return res.status(internalError).json({
 			status: internalError,
 			message: error.message,

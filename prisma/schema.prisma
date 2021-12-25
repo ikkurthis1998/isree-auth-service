@@ -14,19 +14,22 @@ datasource db {
 }
 
 model User {
-  id             String     @id @default(uuid())
-  username       String?    @unique
+  id             String        @id @default(uuid())
+  username       String?       @unique
   firstName      String
   lastName       String
-  email          String     @unique
+  email          String        @unique
   userData       String
-  emailVerified  Boolean    @default(false)
-  phone          String?    @unique
-  phoneVerified  Boolean    @default(false)
+  emailVerified  Boolean       @default(false)
+  phone          String?       @unique
+  phoneVerified  Boolean       @default(false)
   roles          UserRole[]
   profilePicture String?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  business       Business?     @relation(fields: [businessId], references: [id])
+  businessId     String?
+  applications   Application[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 model UserRole {
@@ -43,4 +46,31 @@ enum Role {
   OPERATIONS
   SUPPLYCHAIN
   USER
+}
+
+model Business {
+  id           String        @id @default(uuid())
+  name         String
+  code         String        @unique
+  verified     Boolean       @default(false)
+  token        String?       @unique
+  logo         String?
+  users        User[]
+  applications Application[]
+}
+
+model Application {
+  id         String   @id @default(uuid())
+  name       String
+  type       AppType
+  appData    String
+  users      User[]
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String
+}
+
+enum AppType {
+  DASHBOARD
+  WEB
+  MOBILE
 }

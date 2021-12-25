@@ -1,46 +1,39 @@
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
-import { decryptData, encryptData } from "../../utils/crypto";
+import { decryptData } from "../../utils/crypto";
 import {
 	accessDenied,
-	conflict,
-	created,
 	internalError,
 	notFound,
 	ok
 } from "../../utils/httpStatusCodes";
-import { prisma } from "../../utils/prisma";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
+import getUser from "../utils/user/getUser";
+import getUserRoles from "../utils/userRole/getUserRoles";
 
 const signinController = async (req: Request, res: Response) => {
 	const functionName = "signinController";
 	const traceId = uuid();
 
 	try {
-		const { email, password } = req.body;
+		const token = req.headers.token as string;
+		const { email, key } = req.body;
 
-		const existingUser = await prisma.user.findUnique({
-			where: {
-				email
-			}
-		});
+		const existingUser = await getUser({ email, traceId });
 
 		if (existingUser) {
-			const data = decryptData(existingUser.userData, password);
+			const data = decryptData(existingUser.userData, key);
 			if (data && data.length > 0) {
 				const userData = JSON.parse(data);
 				if (userData) {
 					const secret = fs.readFileSync(
 						path.resolve(__dirname, "../../certs/private.pem")
 					);
-					const roles = await prisma.userRole.findMany({
-						where: {
-							user: {
-								id: existingUser.id
-							}
-						}
+					const roles = await getUserRoles({
+						userId: userData.id,
+						traceId
 					});
 
 					const details = {
@@ -53,13 +46,18 @@ const signinController = async (req: Request, res: Response) => {
 						phone: existingUser.phone,
 						phoneVerified: existingUser.phoneVerified,
 						roles: roles.map((role) => role.role),
-						profilePicture: existingUser.profilePicture
+						profilePicture: existingUser.profilePicture,
+						businessId: existingUser.businessId
 					};
 
 					const accessToken = jwt.sign(details, secret, {
 						expiresIn: "1h",
 						algorithm: "RS256"
 					});
+
+					console.log(
+						`${functionName} - ${traceId} - 200 - OK - User signed in`
+					);
 					return res.status(ok).json({
 						status: ok,
 						message: "User signed in successfully",
@@ -71,20 +69,28 @@ const signinController = async (req: Request, res: Response) => {
 				}
 			}
 
+			console.log(
+				`${functionName} - ${traceId} - 401 - Access Denied - Invalid key`
+			);
 			return res.status(accessDenied).json({
 				status: accessDenied,
-				message: "Incorrect password",
+				message: "Invalid key",
 				data: null
 			});
 		}
 
+		console.log(
+			`${functionName} - ${traceId} - 404 - Not Found - User not found`
+		);
 		return res.status(notFound).json({
 			status: notFound,
-			message: "User with given email does not exist",
+			message: "User not found",
 			data: null
 		});
 	} catch (error) {
-		console.log(`${functionName} ${traceId} ${error.message}`);
+		console.log(
+			`${functionName} - ${traceId} - 500 - Internal Error - ${error.message}`
+		);
 		return res.status(internalError).json({
 			status: internalError,
 			message: error.message,
