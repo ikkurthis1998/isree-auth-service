@@ -12,13 +12,13 @@ import fs from "fs";
 import path from "path";
 import getUser from "../utils/user/getUser";
 import getUserRoles from "../utils/userRole/getUserRoles";
+import getBusinessToken from "../utils/business/getBusinessToken";
 
 const signinController = async (req: Request, res: Response) => {
 	const functionName = "signinController";
 	const traceId = uuid();
 
 	try {
-		const token = req.headers.token as string;
 		const { email, key } = req.body;
 
 		const existingUser = await getUser({ email, traceId });
@@ -32,7 +32,7 @@ const signinController = async (req: Request, res: Response) => {
 						path.resolve(__dirname, "../../certs/private.pem")
 					);
 					const roles = await getUserRoles({
-						userId: userData.id,
+						userId: existingUser.id,
 						traceId
 					});
 
@@ -47,7 +47,11 @@ const signinController = async (req: Request, res: Response) => {
 						phoneVerified: existingUser.phoneVerified,
 						roles: roles.map((role) => role.role),
 						profilePicture: existingUser.profilePicture,
-						businessId: existingUser.businessId
+						businessId: existingUser.businessId,
+						token: await getBusinessToken({
+							businessId: existingUser.businessId,
+							traceId
+						})
 					};
 
 					const accessToken = jwt.sign(details, secret, {

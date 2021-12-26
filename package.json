@@ -5,7 +5,7 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"genCertsDev": "rm -rf src/certs && mkdir src/certs && openssl genrsa -out src/certs/private.pem 2048 && openssl rsa -in src/certs/private.pem -pubout -out src/certs/public.pem",
-		"dev": "ts-node-dev src/index.ts",
+		"dev": "ts-node-dev --exit-child src/index.ts",
 		"genCerts": "rm -rf build/certs && mkdir build && mkdir build/certs && openssl genrsa -out build/certs/private.pem 2048 && openssl rsa -in build/certs/private.pem -pubout -out build/certs/public.pem",
 		"build": "rimraf build && npm run genCerts && tsc",
 		"start": "node build/index.js"

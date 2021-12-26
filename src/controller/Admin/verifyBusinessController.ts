@@ -9,8 +9,6 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 	const traceId = uuid();
 
 	try {
-		console.log(req["business"]);
-		console.log(req["user"]);
 		const { businessId } = req.body;
 
 		const businessToBeVerified = await prisma.business.findUnique({

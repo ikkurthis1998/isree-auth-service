@@ -64,6 +64,7 @@ model Application {
   name       String
   type       AppType
   appData    String
+  token      String?  @unique
   users      User[]
   business   Business @relation(fields: [businessId], references: [id])
   businessId String

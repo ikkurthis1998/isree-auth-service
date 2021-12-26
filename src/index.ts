@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import userRouter from "./routes/user";
 import adminRouter from "./routes/admin";
+import businessRouter from "./routes/business";
 dotenv.config();
 
 const app = express();
@@ -23,4 +24,5 @@ if (!port) {
 
 	app.use("/user", userRouter);
 	app.use("/admin", adminRouter);
+	app.use("/business", businessRouter);
 }
