@@ -8,9 +8,9 @@ import {
 	internalError
 } from "../../utils/httpStatusCodes";
 import createUser from "../utils/user/createUser";
-import createUserRole from "../utils/userRole/createUserRole";
 import getUserRoles from "../utils/userRole/getUserRoles";
 import getUser from "../utils/user/getUser";
+import createUserRoles from "../utils/userRole/createUserRoles";
 
 const signupController = async (req: Request, res: Response) => {
 	const functionName = "signupController";
@@ -54,9 +54,9 @@ const signupController = async (req: Request, res: Response) => {
 
 		const user = data as User;
 
-		await createUserRole({
+		await createUserRoles({
 			userId: user.id,
-			role: "USER",
+			roles: ["USER"],
 			traceId
 		});
 

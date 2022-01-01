@@ -12,7 +12,7 @@ import connectBusinessUser from "../utils/connectBusinessUser";
 import createUser from "../utils/user/createUser";
 import getUser from "../utils/user/getUser";
 import { User } from "@prisma/client";
-import createUserRole from "../utils/userRole/createUserRole";
+import createUserRoles from "../utils/userRole/createUserRoles";
 import getRoles from "../utils/userRole/getUserRoles";
 
 const registerCompanyController = async (req: Request, res: Response) => {
@@ -56,9 +56,9 @@ const registerCompanyController = async (req: Request, res: Response) => {
 				traceId
 			});
 
-			await createUserRole({
+			await createUserRoles({
 				userId: connectedUser.id,
-				role: "ADMIN",
+				roles: ["ADMIN"],
 				traceId
 			});
 
@@ -140,9 +140,9 @@ const registerCompanyController = async (req: Request, res: Response) => {
 			traceId
 		});
 
-		await createUserRole({
+		await createUserRoles({
 			userId: connectedUser.id,
-			role: "ADMIN",
+			roles: ["ADMIN"],
 			traceId
 		});
 
