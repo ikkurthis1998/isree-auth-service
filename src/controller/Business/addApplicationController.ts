@@ -13,7 +13,7 @@ const addApplicationController = async (req: Request, res: Response) => {
 		const { user, business } = req as any;
 
 		if (
-			!user.roles.includes("ADMIN") &&
+			!user.roles.includes("ADMIN") ||
 			!user.roles.includes("DEVELOPER")
 		) {
 			console.log(
@@ -50,7 +50,7 @@ const addApplicationController = async (req: Request, res: Response) => {
 		);
 		return res.status(internalError).json({
 			status: internalError,
-			message: "Internal Error",
+			message: error.message,
 			data: null
 		});
 	}

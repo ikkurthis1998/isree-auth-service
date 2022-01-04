@@ -30,7 +30,7 @@ const getBusinessUsersController = async (req: Request, res: Response) => {
 		);
 		return res.status(internalError).json({
 			status: internalError,
-			message: "Internal Error",
+			message: error.message,
 			data: null
 		});
 	}

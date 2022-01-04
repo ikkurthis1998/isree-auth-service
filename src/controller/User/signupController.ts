@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { Application, Business, User } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import {
@@ -17,7 +17,22 @@ const signupController = async (req: Request, res: Response) => {
 	const traceId = uuid();
 
 	try {
-		const token = req.headers.token as string;
+		const { business, application } = req as {
+			business?: Business;
+			application?: Application;
+		};
+
+		if (!business && !application) {
+			console.log(
+				`${functionName} - ${traceId} - 400 - Bad Request - Business or Application not found`
+			);
+			return res.status(badRequest).json({
+				status: badRequest,
+				message: "Business or Application not found",
+				data: null
+			});
+		}
+
 		const { firstName, lastName, email, key } = req.body;
 
 		const existingUser = await getUser({ email, traceId });
@@ -67,16 +82,58 @@ const signupController = async (req: Request, res: Response) => {
 			})
 		).map((role) => role.role);
 
+		if (business) {
+			await prisma.user.update({
+				where: {
+					id: user.id
+				},
+				data: {
+					business: {
+						connect: {
+							id: business.id
+						}
+					}
+				}
+			});
+		}
+
+		if (application) {
+			await prisma.user.update({
+				where: {
+					id: user.id
+				},
+				data: {
+					applications: {
+						connect: {
+							id: application.id
+						}
+					}
+				}
+			});
+		}
+
+		const finalUser = await prisma.user.findUnique({
+			where: {
+				id: user.id
+			},
+			include: {
+				business: true,
+				applications: true
+			}
+		});
+
 		const userData = {
-			id: user.id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			email: user.email,
-			emailVerified: user.emailVerified,
-			phone: user.phone,
-			phoneVerified: user.phoneVerified,
-			profilePicture: user.profilePicture,
-			roles
+			id: finalUser.id,
+			firstName: finalUser.firstName,
+			lastName: finalUser.lastName,
+			email: finalUser.email,
+			emailVerified: finalUser.emailVerified,
+			phone: finalUser.phone,
+			phoneVerified: finalUser.phoneVerified,
+			profilePicture: finalUser.profilePicture,
+			roles,
+			business: finalUser.business,
+			applications: finalUser.applications
 		};
 
 		console.log(

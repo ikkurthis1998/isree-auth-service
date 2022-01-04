@@ -6,12 +6,12 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "../utils/prisma";
 
-const validateAdminHeaders = async (
+const validateHeaders = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
-	const functionName = "validateAdminHeaders";
+	const functionName = "validateHeaders";
 	const traceId = uuid();
 
 	try {
@@ -132,4 +132,4 @@ const validateAdminHeaders = async (
 	}
 };
 
-export default validateAdminHeaders;
+export default validateHeaders;
