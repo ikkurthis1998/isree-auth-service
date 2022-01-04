@@ -25,25 +25,35 @@ const validateToken = async (
 			});
 		}
 
-		const business = await prisma.business.findUnique({
+		const application = await prisma.application.findUnique({
 			where: {
 				token
 			}
 		});
 
-		if (!business) {
-			console.log(
-				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
-			);
-			return res.status(unAuthorized).json({
-				status: unAuthorized,
-				message: "Invalid token",
-				data: null
+		if (!application) {
+			const business = await prisma.business.findUnique({
+				where: {
+					token
+				}
 			});
+
+			if (!business) {
+				console.log(
+					`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
+				);
+				return res.status(unAuthorized).json({
+					status: unAuthorized,
+					message: "Invalid token",
+					data: null
+				});
+			}
+
+			req["business"] = business;
 		}
 
+		req["application"] = application;
 		console.log(`${functionName} - ${traceId} - 200 - OK - Token verified`);
-		req["business"] = business;
 		next();
 	} catch (error) {
 		console.log(

@@ -64,13 +64,36 @@ const validateAdminHeaders = async (
 
 		req["user"] = user;
 
-		const business = await prisma.business.findUnique({
+		const application = await prisma.application.findUnique({
 			where: {
 				token
 			}
 		});
 
-		if (!business) {
+		if (!application) {
+			const business = await prisma.business.findUnique({
+				where: {
+					token
+				}
+			});
+
+			if (!business) {
+				console.log(
+					`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
+				);
+				return res.status(unAuthorized).json({
+					status: unAuthorized,
+					message: "Invalid token",
+					data: null
+				});
+			}
+
+			req["business"] = business;
+		}
+
+		req["application"] = application;
+
+		if (req["business"] && req["business"].id !== user.businessId) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -81,18 +104,10 @@ const validateAdminHeaders = async (
 			});
 		}
 
-		if (business.code !== "isree-auth-service") {
-			console.log(
-				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
-			);
-			return res.status(unAuthorized).json({
-				status: unAuthorized,
-				message: "Invalid token",
-				data: null
-			});
-		}
-
-		if (business.id !== user.businessId) {
+		if (
+			req["application"] &&
+			req["application"].businessId !== user.businessId
+		) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -104,7 +119,6 @@ const validateAdminHeaders = async (
 		}
 
 		console.log(`${functionName} - ${traceId} - 200 - OK - Token verified`);
-		req["business"] = business;
 		next();
 	} catch (error) {
 		console.log(
