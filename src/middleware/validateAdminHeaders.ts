@@ -92,7 +92,7 @@ const validateAdminHeaders = async (
 			});
 		}
 
-		if (business.id !== user.businessId) {
+		if (business.id !== user.business.id) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -112,7 +112,7 @@ const validateAdminHeaders = async (
 		);
 		return res.status(internalError).json({
 			status: internalError,
-			message: "Internal Error",
+			message: error.message,
 			data: null
 		});
 	}

@@ -4,6 +4,7 @@ import getClientUsersController from "../controller/Business/getClientUsersContr
 import assignUserRoleController from "../controller/Business/assignUserRoleController";
 import validateToken from "../middleware/validateToken";
 import validateHeaders from "../middleware/validateHeaders";
+import addApplicationController from "../controller/Business/addApplicationController";
 
 const businessRouter = express.Router();
 
@@ -15,6 +16,12 @@ businessRouter.post(
 	"/user/assignRole",
 	validateHeaders,
 	assignUserRoleController
+);
+
+businessRouter.post(
+	"/application/add",
+	validateHeaders,
+	addApplicationController
 );
 
 export default businessRouter;

@@ -93,7 +93,7 @@ const validateHeaders = async (
 
 		req["application"] = application;
 
-		if (req["business"] && req["business"].id !== user.businessId) {
+		if (req["business"] && req["business"].id !== user.business.id) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -106,7 +106,7 @@ const validateHeaders = async (
 
 		if (
 			req["application"] &&
-			req["application"].businessId !== user.businessId
+			req["application"].businessId !== user.business.id
 		) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
@@ -126,7 +126,7 @@ const validateHeaders = async (
 		);
 		return res.status(internalError).json({
 			status: internalError,
-			message: "Internal Error",
+			message: error.message,
 			data: null
 		});
 	}

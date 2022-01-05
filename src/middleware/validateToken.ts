@@ -61,7 +61,7 @@ const validateToken = async (
 		);
 		return res.status(internalError).json({
 			status: internalError,
-			message: "Internal Error",
+			message: error.message,
 			data: null
 		});
 	}

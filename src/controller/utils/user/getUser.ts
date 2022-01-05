@@ -1,4 +1,10 @@
+import { Application, Role, User } from "@prisma/client";
 import { prisma } from "../../../utils/prisma";
+
+type FullUser = User & {
+	roles: Role[];
+	applications: Application[];
+};
 
 const getUser = async ({
 	email,
@@ -13,6 +19,36 @@ const getUser = async ({
 		const user = await prisma.user.findUnique({
 			where: {
 				email
+			},
+			include: {
+				applications: {
+					select: {
+						id: true,
+						name: true,
+						token: true,
+						business: {
+							select: {
+								id: true,
+								name: true,
+								verified: true,
+								logo: true
+							}
+						}
+					}
+				},
+				business: {
+					select: {
+						id: true,
+						name: true,
+						verified: true,
+						logo: true
+					}
+				},
+				roles: {
+					select: {
+						role: true
+					}
+				}
 			}
 		});
 
@@ -22,7 +58,21 @@ const getUser = async ({
 		}
 
 		console.log(`${functionName} - ${traceId} - User found`);
-		return user;
+		return {
+			id: user.id,
+			username: user.username,
+			userData: user.userData,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+			emailVerified: user.emailVerified,
+			phone: user.phone,
+			phoneVerified: user.phoneVerified,
+			profilePicture: user.profilePicture,
+			roles: user.roles.map((role) => role.role),
+			business: user.business,
+			applications: user.applications
+		};
 	} catch (error) {
 		throw error;
 	}

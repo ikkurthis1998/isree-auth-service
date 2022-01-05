@@ -1,7 +1,9 @@
+import { Application } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import {
 	badRequest,
+	created,
 	internalError,
 	unAuthorized
 } from "../../utils/httpStatusCodes";
@@ -13,7 +15,7 @@ const addApplicationController = async (req: Request, res: Response) => {
 		const { user, business } = req as any;
 
 		if (
-			!user.roles.includes("ADMIN") ||
+			!user.roles.includes("ADMIN") &&
 			!user.roles.includes("DEVELOPER")
 		) {
 			console.log(
@@ -21,7 +23,8 @@ const addApplicationController = async (req: Request, res: Response) => {
 			);
 			return res.status(unAuthorized).json({
 				status: unAuthorized,
-				message: "Unauthorized"
+				message: "Unauthorized",
+				data: null
 			});
 		}
 		const { name, type, key } = req.body;
@@ -44,6 +47,17 @@ const addApplicationController = async (req: Request, res: Response) => {
 				data
 			});
 		}
+
+		const application = data as Application;
+
+		console.log(
+			`${functionName} - ${traceId} - ${created} - Created - Application created`
+		);
+		return res.status(created).json({
+			status: created,
+			message: "Application created",
+			data: application
+		});
 	} catch (error) {
 		console.log(
 			`${functionName} - ${traceId} - 500 - Internal Error - ${error.message}`

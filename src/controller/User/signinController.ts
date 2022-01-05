@@ -13,6 +13,8 @@ import path from "path";
 import getUser from "../utils/user/getUser";
 import getUserRoles from "../utils/userRole/getUserRoles";
 import getBusinessToken from "../utils/business/getBusinessToken";
+import getBusiness from "../utils/business/getBusiness";
+import { Application, Role, User } from "@prisma/client";
 
 const signinController = async (req: Request, res: Response) => {
 	const functionName = "signinController";
@@ -31,10 +33,20 @@ const signinController = async (req: Request, res: Response) => {
 					const secret = fs.readFileSync(
 						path.resolve(__dirname, "../../certs/private.pem")
 					);
-					const roles = await getUserRoles({
-						userId: existingUser.id,
-						traceId
-					});
+					// const roles = await getUserRoles({
+					// 	userId: existingUser.id,
+					// 	traceId
+					// });
+
+					// const applications = await prisma.application.findMany({
+					// 	where: {
+					// 		users: {
+					// 			some: {
+					// 				id: existingUser.id
+					// 			}
+					// 		}
+					// 	}
+					// });
 
 					const details = {
 						id: existingUser.id,
@@ -45,11 +57,12 @@ const signinController = async (req: Request, res: Response) => {
 						emailVerified: existingUser.emailVerified,
 						phone: existingUser.phone,
 						phoneVerified: existingUser.phoneVerified,
-						roles: roles.map((role) => role.role),
+						roles: existingUser.roles,
 						profilePicture: existingUser.profilePicture,
-						businessId: existingUser.businessId,
+						business: existingUser.business,
+						applications: existingUser.applications,
 						token: await getBusinessToken({
-							businessId: existingUser.businessId,
+							businessId: existingUser.business.id,
 							traceId
 						})
 					};

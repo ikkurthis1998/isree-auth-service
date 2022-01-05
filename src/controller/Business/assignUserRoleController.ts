@@ -47,7 +47,7 @@ const assignUserRoleController = async (req: Request, res: Response) => {
 			traceId
 		});
 
-		if (userToBeAssignedRoles.businessId !== business.id) {
+		if (userToBeAssignedRoles.business.id !== business.id) {
 			console.log(
 				`${functionName} - ${traceId} - ${unAuthorized} - Unauthorized - Unauthorized`
 			);
