@@ -4,20 +4,20 @@ import { internalError, notFound, ok } from "../../utils/httpStatusCodes";
 import { prisma } from "../../utils/prisma";
 import generateToken from "../utils/business/generateToken";
 
-const verifyBusinessController = async (req: Request, res: Response) => {
-	const functionName = "verifyBusinessController";
+const verifyApplicationController = async (req: Request, res: Response) => {
+	const functionName = "verifyApplicationController";
 	const traceId = uuid();
 
 	try {
-		const { businessId } = req.body;
+		const { applicationId } = req.body;
 
-		const businessToBeVerified = await prisma.business.findUnique({
+		const applicationToBeVerified = await prisma.application.findUnique({
 			where: {
-				id: businessId
+				id: applicationId
 			}
 		});
 
-		if (!businessToBeVerified) {
+		if (!applicationToBeVerified) {
 			console.log(
 				`${functionName} - ${traceId} - 404 - Not Found - Business not found`
 			);
@@ -29,27 +29,26 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 		}
 
 		const token = generateToken({
-			id: businessToBeVerified.id,
+			id: applicationToBeVerified.id,
 			traceId
 		});
 
-		const updatedBusiness = await prisma.business.update({
+		const updatedApplication = await prisma.application.update({
 			where: {
-				id: businessToBeVerified.id
+				id: applicationToBeVerified.id
 			},
 			data: {
-				verified: true,
 				token
 			}
 		});
 
 		console.log(
-			`${functionName} - ${traceId} - ${ok} - OK - Business verified`
+			`${functionName} - ${traceId} - ${ok} - OK - Application verified`
 		);
 		return res.status(ok).json({
 			status: ok,
-			message: "Business verified",
-			data: updatedBusiness
+			message: "Application verified",
+			data: updatedApplication
 		});
 	} catch (error) {
 		console.log(
@@ -63,4 +62,4 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 	}
 };
 
-export default verifyBusinessController;
+export default verifyApplicationController;

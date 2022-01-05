@@ -8,6 +8,7 @@ import {
 	unAuthorized
 } from "../../utils/httpStatusCodes";
 import createApplication from "../utils/business/createApplication";
+import generateToken from "../utils/business/generateToken";
 const addApplicationController = async (req: Request, res: Response) => {
 	const functionName = "addApplicationController";
 	const traceId = uuid();
@@ -50,13 +51,27 @@ const addApplicationController = async (req: Request, res: Response) => {
 
 		const application = data as Application;
 
+		const token = generateToken({
+			id: application.id,
+			traceId
+		});
+
+		const updatedApplication = await prisma.application.update({
+			where: {
+				id: application.id
+			},
+			data: {
+				token
+			}
+		});
+
 		console.log(
 			`${functionName} - ${traceId} - ${created} - Created - Application created`
 		);
 		return res.status(created).json({
 			status: created,
 			message: "Application created",
-			data: application
+			data: updatedApplication
 		});
 	} catch (error) {
 		console.log(
