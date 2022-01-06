@@ -4,9 +4,9 @@
 	"description": "Auth Service for all of sree's projects",
 	"main": "src/index.ts",
 	"scripts": {
-		"genCertsDev": "rm -rf src/certs && mkdir src/certs && openssl genrsa -out src/certs/private.pem 2048 && openssl rsa -in src/certs/private.pem -pubout -out src/certs/public.pem",
+		"genCertsDev": "rm -rf src/certs && mkdir src/certs && openssl genrsa -out src/certs/access_private.pem 2048 && openssl rsa -in src/certs/access_private.pem -pubout -out src/certs/access_public.pem && openssl genrsa -out src/certs/refresh_private.pem 2048 && openssl rsa -in src/certs/refresh_private.pem -pubout -out src/certs/refresh_public.pem",
 		"dev": "ts-node-dev --exit-child src/index.ts",
-		"genCerts": "rm -rf build/certs && mkdir build && mkdir build/certs && openssl genrsa -out build/certs/private.pem 2048 && openssl rsa -in build/certs/private.pem -pubout -out build/certs/public.pem",
+		"genCerts": "rm -rf build/certs && mkdir build && mkdir build/certs && openssl genrsa -out build/certs/access_private.pem 2048 && openssl rsa -in build/certs/access_private.pem -pubout -out build/certs/access_public.pem && openssl genrsa -out build/certs/refresh_private.pem 2048 && openssl rsa -in build/certs/refresh_private.pem -pubout -out build/certs/refresh_public.pem",
 		"build": "rimraf build && npm run genCerts && tsc",
 		"start": "node build/index.js"
 	},

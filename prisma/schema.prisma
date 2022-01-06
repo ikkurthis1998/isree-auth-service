@@ -28,6 +28,7 @@ model User {
   business       Business?     @relation(fields: [businessId], references: [id])
   businessId     String?
   applications   Application[]
+  activities     Activity[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 }
@@ -53,25 +54,49 @@ model Business {
   name         String
   code         String        @unique
   verified     Boolean       @default(false)
-  token        String?       @unique
   logo         String?
   users        User[]
   applications Application[]
 }
 
 model Application {
-  id         String   @id @default(uuid())
+  id         String     @id @default(uuid())
   name       String
   type       AppType
   appData    String
-  token      String?  @unique
+  token      String?    @unique
   users      User[]
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business   @relation(fields: [businessId], references: [id])
   businessId String
+  activities Activity[]
 }
 
 enum AppType {
   DASHBOARD
   WEB
   MOBILE
+}
+
+model Activity {
+  id            String       @id @default(uuid())
+  type          ActivityType
+  user          User         @relation(fields: [userId], references: [id])
+  userId        String
+  application   Application  @relation(fields: [applicationId], references: [id])
+  applicationId String
+  data          String
+  createdAt     DateTime     @default(now())
+}
+
+enum ActivityType {
+  SIGNIN
+  CREATE_USER
+  UPDATE_USER
+  DELETE_USER
+  CREATE_BUSINESS
+  UPDATE_BUSINESS
+  DELETE_BUSINESS
+  CREATE_APPLICATION
+  UPDATE_APPLICATION
+  DELETE_APPLICATION
 }

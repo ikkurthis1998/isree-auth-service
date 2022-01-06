@@ -79,6 +79,7 @@ const signinController = async (req: Request, res: Response) => {
 						status: ok,
 						message: "User signed in successfully",
 						data: {
+							req,
 							details,
 							accessToken
 						}
