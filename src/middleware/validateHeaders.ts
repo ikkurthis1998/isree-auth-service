@@ -5,6 +5,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 import { prisma } from "../utils/prisma";
+import { verifyAccessToken } from "../utils/jwt";
 
 const validateHeaders = async (
 	req: Request,
@@ -60,7 +61,7 @@ const validateHeaders = async (
 			path.resolve(__dirname, "../certs/public.pem")
 		);
 
-		const user = jwt.verify(tokenToVerify, secret) as JwtPayload;
+		const user = verifyAccessToken(tokenToVerify) as JwtPayload;
 
 		req["user"] = user;
 
@@ -71,52 +72,28 @@ const validateHeaders = async (
 		});
 
 		if (!application) {
-			const business = await prisma.business.findUnique({
-				where: {
-					token
-				}
+			console.log(
+				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
+			);
+			return res.status(unAuthorized).json({
+				status: unAuthorized,
+				message: "Invalid token",
+				data: null
 			});
+		}
 
-			if (!business) {
-				console.log(
-					`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
-				);
-				return res.status(unAuthorized).json({
-					status: unAuthorized,
-					message: "Invalid token",
-					data: null
-				});
-			}
-
-			req["business"] = business;
+		if (application && application.businessId !== user.business.id) {
+			console.log(
+				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
+			);
+			return res.status(unAuthorized).json({
+				status: unAuthorized,
+				message: "Invalid token",
+				data: null
+			});
 		}
 
 		req["application"] = application;
-
-		if (req["business"] && req["business"].id !== user.business.id) {
-			console.log(
-				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
-			);
-			return res.status(unAuthorized).json({
-				status: unAuthorized,
-				message: "Invalid token",
-				data: null
-			});
-		}
-
-		if (
-			req["application"] &&
-			req["application"].businessId !== user.business.id
-		) {
-			console.log(
-				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
-			);
-			return res.status(unAuthorized).json({
-				status: unAuthorized,
-				message: "Invalid token",
-				data: null
-			});
-		}
 
 		console.log(`${functionName} - ${traceId} - 200 - OK - Token verified`);
 		next();

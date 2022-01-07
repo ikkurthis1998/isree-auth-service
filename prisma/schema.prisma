@@ -28,6 +28,7 @@ model User {
   business       Business?     @relation(fields: [businessId], references: [id])
   businessId     String?
   applications   Application[]
+  lastSignin     DateTime?
   activities     Activity[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -89,7 +90,7 @@ model Activity {
 }
 
 enum ActivityType {
-  SIGNIN
+  CUSTOM
   CREATE_USER
   UPDATE_USER
   DELETE_USER

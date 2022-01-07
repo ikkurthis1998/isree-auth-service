@@ -5,6 +5,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 import { prisma } from "../utils/prisma";
+import { verifyAccessToken } from "../utils/jwt";
 
 const validateAdminHeaders = async (
 	req: Request,
@@ -60,17 +61,17 @@ const validateAdminHeaders = async (
 			path.resolve(__dirname, "../certs/public.pem")
 		);
 
-		const user = jwt.verify(tokenToVerify, secret) as JwtPayload;
+		const user = verifyAccessToken(tokenToVerify) as JwtPayload;
 
 		req["user"] = user;
 
-		const business = await prisma.business.findUnique({
+		const application = await prisma.application.findUnique({
 			where: {
 				token
 			}
 		});
 
-		if (!business) {
+		if (!application) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -81,7 +82,7 @@ const validateAdminHeaders = async (
 			});
 		}
 
-		if (business.code !== "isree-auth-service") {
+		if (application && application.businessId !== user.business.id) {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -92,7 +93,7 @@ const validateAdminHeaders = async (
 			});
 		}
 
-		if (business.id !== user.business.id) {
+		if (application.id !== "") {
 			console.log(
 				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
 			);
@@ -102,9 +103,11 @@ const validateAdminHeaders = async (
 				data: null
 			});
 		}
+
+		req["application"] = application;
 
 		console.log(`${functionName} - ${traceId} - 200 - OK - Token verified`);
-		req["business"] = business;
+		req["application"] = application;
 		next();
 	} catch (error) {
 		console.log(
