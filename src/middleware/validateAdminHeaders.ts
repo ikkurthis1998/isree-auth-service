@@ -68,6 +68,23 @@ const validateAdminHeaders = async (
 		const application = await prisma.application.findUnique({
 			where: {
 				token
+			},
+			select: {
+				id: true,
+				name: true,
+				type: true,
+				appData: true,
+				token: true,
+				business: {
+					select: {
+						id: true,
+						name: true,
+						code: true,
+						verified: true,
+						logo: true
+					}
+				},
+				businessId: true
 			}
 		});
 

@@ -11,27 +11,17 @@ import createUser from "../utils/user/createUser";
 import getUserRoles from "../utils/userRole/getUserRoles";
 import getUser from "../utils/user/getUser";
 import createUserRoles from "../utils/userRole/createUserRoles";
+import { AuthApplication } from "../../middleware/types";
 
-const signupController = async (req: Request, res: Response) => {
+const signupController = async (
+	req: Request & { application: AuthApplication },
+	res: Response
+) => {
 	const functionName = "signupController";
 	const traceId = uuid();
 
 	try {
-		const { business, application } = req as {
-			business?: Business;
-			application?: Application;
-		};
-
-		if (!business && !application) {
-			console.log(
-				`${functionName} - ${traceId} - 400 - Bad Request - Business or Application not found`
-			);
-			return res.status(badRequest).json({
-				status: badRequest,
-				message: "Business or Application not found",
-				data: null
-			});
-		}
+		const { application } = req;
 
 		const { firstName, lastName, email, key } = req.body;
 
@@ -39,11 +29,11 @@ const signupController = async (req: Request, res: Response) => {
 
 		if (existingUser) {
 			console.log(
-				`${functionName} - ${traceId} - 409 - Conflict - User already exists`
+				`${functionName} - ${traceId} - 409 - Conflict - Email already exists`
 			);
 			return res.status(conflict).json({
 				status: conflict,
-				message: "User already exists",
+				message: "Email already exists",
 				data: null
 			});
 		}
@@ -82,7 +72,7 @@ const signupController = async (req: Request, res: Response) => {
 			})
 		).map((role) => role.role);
 
-		if (business) {
+		if (application.type === "DASHBOARD") {
 			await prisma.user.update({
 				where: {
 					id: user.id
@@ -90,37 +80,27 @@ const signupController = async (req: Request, res: Response) => {
 				data: {
 					business: {
 						connect: {
-							id: business.id
+							id: application.business.id
 						}
 					}
 				}
 			});
 		}
 
-		if (application) {
-			await prisma.user.update({
-				where: {
-					id: user.id
-				},
-				data: {
-					applications: {
-						connect: {
-							id: application.id
-						}
-					}
-				}
-			});
-		}
-
-		const finalUser = await prisma.user.findUnique({
+		await prisma.user.update({
 			where: {
 				id: user.id
 			},
-			include: {
-				business: true,
-				applications: true
+			data: {
+				applications: {
+					connect: {
+						id: application.id
+					}
+				}
 			}
 		});
+
+		const finalUser = await getUser({ email, traceId });
 
 		const userData = {
 			id: finalUser.id,

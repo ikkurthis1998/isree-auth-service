@@ -1,10 +1,4 @@
-import { Application, Role, User } from "@prisma/client";
 import { prisma } from "../../../utils/prisma";
-
-type FullUser = User & {
-	roles: Role[];
-	applications: Application[];
-};
 
 const getUser = async ({
 	email,
