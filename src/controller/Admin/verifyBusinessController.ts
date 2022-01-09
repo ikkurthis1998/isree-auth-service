@@ -38,8 +38,7 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 				id: businessToBeVerified.id
 			},
 			data: {
-				verified: true,
-				token
+				verified: true
 			}
 		});
 

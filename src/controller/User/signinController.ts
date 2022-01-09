@@ -15,6 +15,7 @@ import getUserRoles from "../utils/userRole/getUserRoles";
 import getBusinessToken from "../utils/business/getBusinessToken";
 import getBusiness from "../utils/business/getBusiness";
 import { Application, Role, User } from "@prisma/client";
+import { getAccessToken, getRefreshToken } from "../../utils/jwt";
 
 const signinController = async (req: Request, res: Response) => {
 	const functionName = "signinController";
@@ -30,24 +31,6 @@ const signinController = async (req: Request, res: Response) => {
 			if (data && data.length > 0) {
 				const userData = JSON.parse(data);
 				if (userData) {
-					const secret = fs.readFileSync(
-						path.resolve(__dirname, "../../certs/private.pem")
-					);
-					// const roles = await getUserRoles({
-					// 	userId: existingUser.id,
-					// 	traceId
-					// });
-
-					// const applications = await prisma.application.findMany({
-					// 	where: {
-					// 		users: {
-					// 			some: {
-					// 				id: existingUser.id
-					// 			}
-					// 		}
-					// 	}
-					// });
-
 					const details = {
 						id: existingUser.id,
 						username: existingUser.username,
@@ -60,16 +43,12 @@ const signinController = async (req: Request, res: Response) => {
 						roles: existingUser.roles,
 						profilePicture: existingUser.profilePicture,
 						business: existingUser.business,
-						applications: existingUser.applications,
-						token: await getBusinessToken({
-							businessId: existingUser.business.id,
-							traceId
-						})
+						applications: existingUser.applications
 					};
 
-					const accessToken = jwt.sign(details, secret, {
-						expiresIn: "1h",
-						algorithm: "RS256"
+					const accessToken = getAccessToken(details);
+					const refreshToken = getRefreshToken({
+						email: details.email
 					});
 
 					console.log(
@@ -79,8 +58,8 @@ const signinController = async (req: Request, res: Response) => {
 						status: ok,
 						message: "User signed in successfully",
 						data: {
-							req,
 							details,
+							refreshToken,
 							accessToken
 						}
 					});
