@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import { internalError, notFound, ok } from "../../utils/httpStatusCodes";
 import { prisma } from "../../utils/prisma";
-import generateToken from "../utils/business/generateToken";
 
 const verifyBusinessController = async (req: Request, res: Response) => {
 	const functionName = "verifyBusinessController";
@@ -28,10 +27,7 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 			});
 		}
 
-		const token = generateToken({
-			id: businessToBeVerified.id,
-			traceId
-		});
+		// Add Dashboard Application
 
 		const updatedBusiness = await prisma.business.update({
 			where: {

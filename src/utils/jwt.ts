@@ -18,10 +18,10 @@ const refreshPublicSecret = fs.readFileSync(
 	path.resolve(__dirname, "../certs/refresh_public.pem")
 );
 
-const signToken = (payload: any, secret: Buffer) => {
+const signToken = (payload: any, secret: Buffer, expiresIn: string) => {
 	return jwt.sign(payload, secret, {
 		algorithm: "RS256",
-		expiresIn: "1h"
+		expiresIn
 	});
 };
 
@@ -30,11 +30,11 @@ const verifyToken = (token: string, secret: Buffer) => {
 };
 
 export const getAccessToken = (payload: any) => {
-	return signToken(payload, accessPrivateSecret);
+	return signToken(payload, accessPrivateSecret, "1h");
 };
 
 export const getRefreshToken = (payload: any) => {
-	return signToken(payload, refreshPrivateSecret);
+	return signToken(payload, refreshPrivateSecret, "30d");
 };
 
 export const verifyAccessToken = (token: string) => {

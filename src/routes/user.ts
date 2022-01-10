@@ -10,6 +10,6 @@ userRouter.post("/signup", validateToken, signupController);
 
 userRouter.post("/signin", validateToken, signinController);
 
-userRouter.get("/refreshToken", refreshTokenController);
+userRouter.get("/refreshToken", validateToken, refreshTokenController);
 
 export default userRouter;
