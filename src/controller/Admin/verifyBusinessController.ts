@@ -1,7 +1,15 @@
+import { Application } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
-import { internalError, notFound, ok } from "../../utils/httpStatusCodes";
+import {
+	badRequest,
+	internalError,
+	notFound,
+	ok
+} from "../../utils/httpStatusCodes";
 import { prisma } from "../../utils/prisma";
+import createApplication from "../utils/business/createApplication";
+import generateToken from "../utils/business/generateToken";
 
 const verifyBusinessController = async (req: Request, res: Response) => {
 	const functionName = "verifyBusinessController";
@@ -27,7 +35,40 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 			});
 		}
 
-		// Add Dashboard Application
+		const { status, message, data } = await createApplication({
+			name: `${businessToBeVerified.code}_dashboard`,
+			type: "DASHBOARD",
+			key: `${businessToBeVerified.code}_${businessToBeVerified.id}`,
+			businessId: businessToBeVerified.id,
+			traceId
+		});
+
+		if (status === badRequest) {
+			console.log(
+				`${functionName} - ${traceId} - ${status} - Bad Request - ${message}`
+			);
+			return res.status(status).json({
+				status,
+				message,
+				data
+			});
+		}
+
+		const application = data as Application;
+
+		const token = generateToken({
+			id: application.id,
+			traceId
+		});
+
+		const updatedApplication = await prisma.application.update({
+			where: {
+				id: application.id
+			},
+			data: {
+				token
+			}
+		});
 
 		const updatedBusiness = await prisma.business.update({
 			where: {
@@ -35,6 +76,9 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 			},
 			data: {
 				verified: true
+			},
+			include: {
+				applications: true
 			}
 		});
 
