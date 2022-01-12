@@ -72,20 +72,20 @@ const signupController = async (
 			})
 		).map((role) => role.role);
 
-		if (application.type === "DASHBOARD") {
-			await prisma.user.update({
-				where: {
-					id: user.id
-				},
-				data: {
-					business: {
-						connect: {
-							id: application.business.id
-						}
-					}
-				}
-			});
-		}
+		// if (application.type === "DASHBOARD") {
+		// 	await prisma.user.update({
+		// 		where: {
+		// 			id: user.id
+		// 		},
+		// 		data: {
+		// 			business: {
+		// 				connect: {
+		// 					id: application.business.id
+		// 				}
+		// 			}
+		// 		}
+		// 	});
+		// }
 
 		await prisma.user.update({
 			where: {

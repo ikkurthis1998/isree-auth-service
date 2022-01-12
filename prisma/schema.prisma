@@ -35,10 +35,12 @@ model User {
 }
 
 model UserRole {
-  id     String @id @default(uuid())
-  role   Role
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  id        String   @id @default(uuid())
+  role      Role
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
@@ -58,6 +60,36 @@ model Business {
   logo         String?
   users        User[]
   applications Application[]
+  invites      Invite[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Invite {
+  id            String       @id @default(uuid())
+  inviteType    InviteType
+  role          Role
+  business      Business     @relation(fields: [businessId], references: [id])
+  businessId    String
+  application   Application  @relation(fields: [applicationId], references: [id])
+  applicationId String
+  email         String       @unique
+  code          String       @unique @default(cuid())
+  inviteStatus  InviteStatus @default(PENDING)
+  inviteExpiry  DateTime
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+enum InviteType {
+  BUSINESS
+  USER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model Application {
@@ -70,6 +102,9 @@ model Application {
   business   Business   @relation(fields: [businessId], references: [id])
   businessId String
   activities Activity[]
+  invites    Invite[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 enum AppType {
@@ -87,13 +122,14 @@ model Activity {
   applicationId String
   data          String
   createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 enum ActivityType {
   CUSTOM
-  CREATE_USER
-  UPDATE_USER
-  DELETE_USER
+  CREATE_BUSINESS_USER
+  UPDATE_BUSINESS_USER
+  DELETE_BUSINESS_USER
   CREATE_BUSINESS
   UPDATE_BUSINESS
   DELETE_BUSINESS

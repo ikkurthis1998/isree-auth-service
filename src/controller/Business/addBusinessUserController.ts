@@ -11,8 +11,8 @@ import createUser from "../utils/user/createUser";
 import createUserRoles from "../utils/userRole/createUserRoles";
 import getUserRoles from "../utils/userRole/getUserRoles";
 
-const addDashboardUserController = async (req: Request, res: Response) => {
-	const functionName = "addDashboardUserController";
+const addBusinessUserController = async (req: Request, res: Response) => {
+	const functionName = "addBusinessUserController";
 	const traceId = uuid();
 	try {
 		const { user, business } = req as any;
@@ -97,4 +97,4 @@ const addDashboardUserController = async (req: Request, res: Response) => {
 	}
 };
 
-export default addDashboardUserController;
+export default addBusinessUserController;
