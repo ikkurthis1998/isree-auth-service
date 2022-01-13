@@ -9,7 +9,7 @@ const checkKeyStrength = ({
 }) => {
 	const functionName = "checkKeyStrength";
 
-	if (key.length < 8) {
+	if (key && key.length < 8) {
 		console.log(`${functionName} - ${traceId} - Key is too short`);
 		return {
 			score: 0,
@@ -21,7 +21,7 @@ const checkKeyStrength = ({
 		};
 	}
 
-	if (key.length > 32) {
+	if (key && key.length > 32) {
 		console.log(`${functionName} - ${traceId} - Key is too long`);
 		return {
 			score: 0,

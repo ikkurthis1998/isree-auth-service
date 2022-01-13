@@ -15,6 +15,7 @@ const inviteBusinessUser = async (req: Request, res: Response) => {
 	try {
 		const { user, application } = req as any;
 
+		console.log(application);
 		if (!user.roles.includes("ADMIN")) {
 			console.log(
 				`${functionName} - ${traceId} - ${unAuthorized} - Unauthorized - Unauthorized`
@@ -30,7 +31,7 @@ const inviteBusinessUser = async (req: Request, res: Response) => {
 
 		const existingUser = await getUser({ email, traceId });
 
-		if (existingUser.business.id) {
+		if (existingUser && existingUser.business.id) {
 			console.log(
 				`${functionName} - ${traceId} - ${badRequest} - BadRequest - User already has a business`
 			);

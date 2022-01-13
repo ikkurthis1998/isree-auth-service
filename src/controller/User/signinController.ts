@@ -7,14 +7,7 @@ import {
 	notFound,
 	ok
 } from "../../utils/httpStatusCodes";
-import jwt from "jsonwebtoken";
-import fs from "fs";
-import path from "path";
 import getUser from "../utils/user/getUser";
-import getUserRoles from "../utils/userRole/getUserRoles";
-import getBusinessToken from "../utils/business/getBusinessToken";
-import getBusiness from "../utils/business/getBusiness";
-import { Application, Role, User } from "@prisma/client";
 import { getAccessToken, getRefreshToken } from "../../utils/jwt";
 
 const signinController = async (req: Request, res: Response) => {

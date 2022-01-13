@@ -3,7 +3,6 @@ import { JwtPayload } from "jsonwebtoken";
 import { v1 as uuid } from "uuid";
 import { internalError, ok } from "../../utils/httpStatusCodes";
 import { getAccessToken, verifyRefreshToken } from "../../utils/jwt";
-import getBusinessToken from "../utils/business/getBusinessToken";
 import getUser from "../utils/user/getUser";
 
 const refreshTokenController = async (req: Request, res: Response) => {

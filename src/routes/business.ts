@@ -5,6 +5,7 @@ import assignUserRoleController from "../controller/Business/assignUserRoleContr
 import validateToken from "../middleware/validateToken";
 import validateHeaders from "../middleware/validateHeaders";
 import addApplicationController from "../controller/Business/addApplicationController";
+import inviteBusinessUser from "../controller/Business/inviteBusinessUserController";
 
 const businessRouter = express.Router();
 
@@ -23,5 +24,7 @@ businessRouter.post(
 	validateHeaders,
 	addApplicationController
 );
+
+businessRouter.post("/user/invite", validateHeaders, inviteBusinessUser);
 
 export default businessRouter;

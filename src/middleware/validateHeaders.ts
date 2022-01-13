@@ -57,10 +57,6 @@ const validateHeaders = async (
 
 		const tokenToVerify = bearerToken[1];
 
-		const secret = fs.readFileSync(
-			path.resolve(__dirname, "../certs/public.pem")
-		);
-
 		const user = verifyAccessToken(tokenToVerify) as JwtPayload;
 
 		req["user"] = user;
@@ -68,6 +64,9 @@ const validateHeaders = async (
 		const application = await prisma.application.findUnique({
 			where: {
 				token
+			},
+			include: {
+				business: true
 			}
 		});
 

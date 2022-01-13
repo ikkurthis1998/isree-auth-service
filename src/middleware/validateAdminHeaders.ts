@@ -57,10 +57,6 @@ const validateAdminHeaders = async (
 
 		const tokenToVerify = bearerToken[1];
 
-		const secret = fs.readFileSync(
-			path.resolve(__dirname, "../certs/public.pem")
-		);
-
 		const user = verifyAccessToken(tokenToVerify) as JwtPayload;
 
 		req["user"] = user;

@@ -14,9 +14,7 @@ const registerCompanyController = async (req: Request, res: Response) => {
 	try {
 		const { user } = req as Request & { user: AuthUser };
 
-		const {
-			business: { name, code }
-		} = req.body;
+		const { name, code } = req.body;
 
 		const existingBusiness = await getBusiness({
 			code,

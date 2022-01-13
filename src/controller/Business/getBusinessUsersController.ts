@@ -6,12 +6,12 @@ const getBusinessUsersController = async (req: Request, res: Response) => {
 	const functionName = "getBusinessUsersController";
 	const traceId = uuid();
 	try {
-		const { user, business } = req as any;
+		const { user, application } = req as any;
 
 		const businessUsers = await prisma.business
 			.findUnique({
 				where: {
-					id: business.id
+					id: user.business.id
 				}
 			})
 			.users();
