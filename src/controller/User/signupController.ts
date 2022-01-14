@@ -1,17 +1,21 @@
-import { Application, Business, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import {
 	badRequest,
 	conflict,
 	created,
-	internalError
+	internalError,
+	notFound,
+	ok,
+	unAuthorized
 } from "../../utils/httpStatusCodes";
 import createUser from "../utils/user/createUser";
 import getUserRoles from "../utils/userRole/getUserRoles";
 import getUser from "../utils/user/getUser";
 import createUserRoles from "../utils/userRole/createUserRoles";
 import { AuthApplication } from "../../middleware/types";
+import verifyInvite from "../utils/invite/verifyInvite";
 
 const signupController = async (
 	req: Request & { application: AuthApplication },
@@ -23,7 +27,18 @@ const signupController = async (
 	try {
 		const { application } = req;
 
-		const { firstName, lastName, email, key } = req.body;
+		const { firstName, lastName, email, key, inviteCode } = req.body;
+
+		if (application.type === "DASHBOARD" && !inviteCode) {
+			console.log(
+				`${functionName} - ${traceId} - 400 - Bad Request - Missing invite code`
+			);
+			return res.status(badRequest).json({
+				status: badRequest,
+				message: "Missing invite code",
+				data: null
+			});
+		}
 
 		const existingUser = await getUser({ email, traceId });
 
@@ -64,6 +79,54 @@ const signupController = async (
 			roles: ["USER"],
 			traceId
 		});
+
+		if (inviteCode) {
+			let invite = await prisma.invite.findUnique({
+				where: {
+					code: inviteCode
+				}
+			});
+
+			if (!invite) {
+				console.log(
+					`${functionName} - ${traceId} - 404 - Not Found - Invite not found`
+				);
+				return res.status(notFound).json({
+					status: notFound,
+					message: "Invite not found",
+					data: null
+				});
+			}
+
+			const applicationId = invite.applicationId;
+
+			if (application.id !== applicationId) {
+				console.log(
+					`${functionName} - ${traceId} - ${unAuthorized} - Unauthorized - Invite not for this application`
+				);
+				return res.status(unAuthorized).json({
+					status: unAuthorized,
+					message: "Invite not for this application",
+					data: null
+				});
+			}
+
+			const { status, message, data } = await verifyInvite({
+				inviteCode,
+				traceId
+			});
+
+			if (status !== ok) {
+				console.log(
+					`${functionName} - ${traceId} - ${status} - ${message}`
+				);
+				return res.status(status).json({
+					status,
+					message,
+					data
+				});
+			}
+		}
 
 		const roles = (
 			await getUserRoles({

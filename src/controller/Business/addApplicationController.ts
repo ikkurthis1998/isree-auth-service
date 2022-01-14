@@ -1,6 +1,7 @@
 import { Application } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
+import { AuthApplication, AuthUser } from "../../middleware/types";
 import {
 	badRequest,
 	created,
@@ -9,11 +10,14 @@ import {
 } from "../../utils/httpStatusCodes";
 import createApplication from "../utils/business/createApplication";
 import generateToken from "../utils/business/generateToken";
-const addApplicationController = async (req: Request, res: Response) => {
+const addApplicationController = async (
+	req: Request & { application: AuthApplication; user: AuthUser },
+	res: Response
+) => {
 	const functionName = "addApplicationController";
 	const traceId = uuid();
 	try {
-		const { user, business } = req as any;
+		const { user, application } = req;
 
 		if (
 			!user.roles.includes("ADMIN") &&
@@ -34,7 +38,7 @@ const addApplicationController = async (req: Request, res: Response) => {
 			name,
 			type,
 			key,
-			businessId: business.id,
+			businessId: application.business.id,
 			traceId
 		});
 
@@ -49,16 +53,16 @@ const addApplicationController = async (req: Request, res: Response) => {
 			});
 		}
 
-		const application = data as Application;
+		let newApp = data as Application;
 
 		const token = generateToken({
-			id: application.id,
+			id: newApp.id,
 			traceId
 		});
 
-		const updatedApplication = await prisma.application.update({
+		newApp = await prisma.application.update({
 			where: {
-				id: application.id
+				id: newApp.id
 			},
 			data: {
 				token
@@ -71,7 +75,7 @@ const addApplicationController = async (req: Request, res: Response) => {
 		return res.status(created).json({
 			status: created,
 			message: "Application created",
-			data: updatedApplication
+			data: newApp
 		});
 	} catch (error) {
 		console.log(

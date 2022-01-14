@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
+import { AuthApplication } from "../../middleware/types";
 import {
 	badRequest,
 	created,
@@ -9,34 +10,29 @@ import {
 } from "../../utils/httpStatusCodes";
 import getUser from "../utils/user/getUser";
 
-const inviteBusinessUser = async (req: Request, res: Response) => {
-	const functionName = "inviteBusinessUser";
+const inviteUserController = async (
+	req: Request & { application: AuthApplication },
+	res: Response
+) => {
+	const functionName = "inviteUserController";
 	const traceId = uuid();
 	try {
-		const { user, application } = req as any;
+		const { application } = req;
 
-		if (!user.roles.includes("ADMIN")) {
-			console.log(
-				`${functionName} - ${traceId} - ${unAuthorized} - Unauthorized - Unauthorized`
-			);
-			return res.status(unAuthorized).json({
-				status: unAuthorized,
-				message: "Unauthorized",
-				data: null
-			});
-		}
-
-		const { email, role } = req.body;
+		const { email } = req.body;
 
 		const existingUser = await getUser({ email, traceId });
 
-		if (existingUser && existingUser.business.id) {
+		if (
+			existingUser &&
+			existingUser.applications.some((app) => app.id === application.id)
+		) {
 			console.log(
-				`${functionName} - ${traceId} - ${badRequest} - BadRequest - User already has a business`
+				`${functionName} - ${traceId} - ${badRequest} - BadRequest - User already has access to application`
 			);
 			return res.status(badRequest).json({
 				status: badRequest,
-				message: "User already has a business",
+				message: "User already has access to application",
 				data: null
 			});
 		}
@@ -54,18 +50,18 @@ const inviteBusinessUser = async (req: Request, res: Response) => {
 						id: application.id
 					}
 				},
-				role,
-				inviteType: "BUSINESS",
+				role: "USER",
+				inviteType: "USER",
 				inviteExpiry: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
 			}
 		});
 
 		console.log(
-			`${functionName} - ${traceId} - 201 - Created - Dashboard User invite created successfully`
+			`${functionName} - ${traceId} - 201 - Created - User invite created successfully`
 		);
 		return res.status(created).json({
 			status: created,
-			message: "Dashboard User invite created successfully",
+			message: "User invite created successfully",
 			data: invite
 		});
 	} catch (error) {
@@ -80,4 +76,4 @@ const inviteBusinessUser = async (req: Request, res: Response) => {
 	}
 };
 
-export default inviteBusinessUser;
+export default inviteUserController;

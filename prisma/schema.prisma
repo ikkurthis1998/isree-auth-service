@@ -73,7 +73,7 @@ model Invite {
   businessId    String
   application   Application  @relation(fields: [applicationId], references: [id])
   applicationId String
-  email         String       @unique
+  email         String
   code          String       @unique @default(cuid())
   inviteStatus  InviteStatus @default(PENDING)
   inviteExpiry  DateTime

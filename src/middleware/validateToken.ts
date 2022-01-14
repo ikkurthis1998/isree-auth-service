@@ -28,6 +28,9 @@ const validateToken = async (
 		const application = await prisma.application.findUnique({
 			where: {
 				token
+			},
+			include: {
+				business: true
 			}
 		});
 

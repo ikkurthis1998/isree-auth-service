@@ -17,7 +17,6 @@ const getBusiness = async ({
 		});
 		if (!business) {
 			console.log(`${functionName} - ${traceId} - Business not found`);
-			return business;
 		}
 		console.log(`${functionName} - ${traceId} - Business found`);
 		return business;
