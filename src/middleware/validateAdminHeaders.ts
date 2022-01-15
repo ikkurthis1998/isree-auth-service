@@ -106,16 +106,16 @@ const validateAdminHeaders = async (
 			});
 		}
 
-		if (application.id !== "") {
-			console.log(
-				`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
-			);
-			return res.status(unAuthorized).json({
-				status: unAuthorized,
-				message: "Invalid token",
-				data: null
-			});
-		}
+		// if (application.id !== "") {
+		// 	console.log(
+		// 		`${functionName} - ${traceId} - 401 - Unauthorized - Invalid token`
+		// 	);
+		// 	return res.status(unAuthorized).json({
+		// 		status: unAuthorized,
+		// 		message: "Invalid token",
+		// 		data: null
+		// 	});
+		// }
 
 		req["application"] = application;
 

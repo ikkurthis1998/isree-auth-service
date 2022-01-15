@@ -53,6 +53,11 @@ const createUser = async ({
 				lastName,
 				email,
 				userData
+			},
+			include: {
+				applications: true,
+				business: true,
+				roles: true
 			}
 		});
 

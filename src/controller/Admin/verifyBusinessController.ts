@@ -16,11 +16,19 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 	const traceId = uuid();
 
 	try {
-		const { businessId } = req.body;
+		// add protection layer
+		const { businessId, appKey } = req.body;
 
 		const businessToBeVerified = await prisma.business.findUnique({
 			where: {
 				id: businessId
+			},
+			include: {
+				users: {
+					include: {
+						roles: true
+					}
+				}
 			}
 		});
 
@@ -38,7 +46,7 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 		const { status, message, data } = await createApplication({
 			name: `${businessToBeVerified.code}_dashboard`,
 			type: "DASHBOARD",
-			key: `${businessToBeVerified.code}_${businessToBeVerified.id}`,
+			key: appKey,
 			businessId: businessToBeVerified.id,
 			traceId
 		});
@@ -66,7 +74,14 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 				id: application.id
 			},
 			data: {
-				token
+				token,
+				users: {
+					connect: {
+						id: businessToBeVerified.users.find((user) =>
+							user.roles.find((role) => role.role === "ADMIN")
+						).id
+					}
+				}
 			}
 		});
 

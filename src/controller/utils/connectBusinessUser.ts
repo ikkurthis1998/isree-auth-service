@@ -22,6 +22,10 @@ const connectBusinessUser = async ({
 						id: businessId
 					}
 				}
+			},
+			include: {
+				business: true,
+				applications: true
 			}
 		});
 

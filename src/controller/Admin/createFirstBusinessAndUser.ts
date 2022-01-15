@@ -76,7 +76,7 @@ const createFirstBusinessAndUser = async (req: Request, res: Response) => {
 
 		await createUserRoles({
 			userId: connectedUser.id,
-			roles: ["ADMIN"],
+			roles: ["USER", "ADMIN"],
 			traceId
 		});
 
