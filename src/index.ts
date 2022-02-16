@@ -12,7 +12,8 @@ const port = process.env.PORT;
 
 useTreblle(app, {
 	apiKey: "rg2nzPBe5jf5bM9GTBEisraqDU0T87fo",
-	projectId: "L4knp7oKwTjYwOxZ"
+	projectId: "L4knp7oKwTjYwOxZ",
+	additionalFieldsToMask: ["key"]
 });
 
 if (!port) {
