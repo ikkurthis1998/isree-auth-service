@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import userRouter from "./routes/user";
 import adminRouter from "./routes/admin";
 import businessRouter from "./routes/business";
+const { useTreblle } = require("treblle");
 dotenv.config();
 
 const app = express();
 
 const port = process.env.PORT;
+
+useTreblle(app, {
+	apiKey: "rg2nzPBe5jf5bM9GTBEisraqDU0T87fo",
+	projectId: "L4knp7oKwTjYwOxZ"
+});
 
 if (!port) {
 	process.exit(1);

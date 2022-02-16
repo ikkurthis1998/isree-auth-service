@@ -33,6 +33,7 @@
 		"jsonwebtoken": "^8.5.1",
 		"nanoid": "^3.1.30",
 		"rimraf": "^3.0.2",
+		"treblle": "^1.0.2",
 		"uuid": "^8.3.2",
 		"zxcvbn": "^4.4.2"
 	}
