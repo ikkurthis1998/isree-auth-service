@@ -6,8 +6,11 @@ import validateToken from "../middleware/validateToken";
 import validateHeaders from "../middleware/validateHeaders";
 import addApplicationController from "../controller/Business/addApplicationController";
 import inviteBusinessUser from "../controller/Business/inviteBusinessUserController";
+import getApplicationsController from "../controller/Business/getApplicationsController";
 
 const businessRouter = express.Router();
+
+businessRouter.get("/applications", validateHeaders, getApplicationsController);
 
 businessRouter.get("/clients", validateHeaders, getClientUsersController);
 
