@@ -1,6 +1,7 @@
 import { badRequest, notFound, ok } from "../../../utils/httpStatusCodes";
 import getUser from "../user/getUser";
 import createUserRoles from "../userRole/createUserRoles";
+import { prisma } from "../../../utils/prisma";
 
 const verifyInvite = async ({
 	inviteCode,

@@ -16,6 +16,7 @@ import getUser from "../utils/user/getUser";
 import createApplication from "../utils/business/createApplication";
 import generateToken from "../utils/business/generateToken";
 import { generateDashboardName } from "./utils/generateDashboardName";
+import { prisma } from "../../utils/prisma";
 
 const createFirstBusinessAndUser = async (req: Request, res: Response) => {
 	const functionName = "createFirstBusinessAndUser";

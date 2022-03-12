@@ -10,7 +10,7 @@ import {
 	unAuthorized
 } from "../../utils/httpStatusCodes";
 import verifyInvite from "../utils/invite/verifyInvite";
-import getUser from "../utils/user/getUser";
+import { prisma } from "../../utils/prisma";
 
 const verifyInviteController = async (
 	req: Request & {

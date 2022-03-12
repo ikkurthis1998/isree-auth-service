@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import {
@@ -8,6 +7,7 @@ import {
 	unAuthorized
 } from "../../utils/httpStatusCodes";
 import getUser from "../utils/user/getUser";
+import { prisma } from "../../utils/prisma";
 
 const inviteBusinessUser = async (req: Request, res: Response) => {
 	const functionName = "inviteBusinessUser";

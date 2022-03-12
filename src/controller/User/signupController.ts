@@ -16,6 +16,7 @@ import getUser from "../utils/user/getUser";
 import createUserRoles from "../utils/userRole/createUserRoles";
 import { AuthApplication } from "../../middleware/types";
 import verifyInvite from "../utils/invite/verifyInvite";
+import { prisma } from "../../utils/prisma";
 
 const signupController = async (
 	req: Request & { application: AuthApplication },

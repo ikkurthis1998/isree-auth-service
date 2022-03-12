@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import { internalError, ok } from "../../utils/httpStatusCodes";
+import { prisma } from "../../utils/prisma";
 
 const getBusinessUsersController = async (req: Request, res: Response) => {
 	const functionName = "getBusinessUsersController";

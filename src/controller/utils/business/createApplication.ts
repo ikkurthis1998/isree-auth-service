@@ -2,6 +2,7 @@ import { AppType } from "@prisma/client";
 import { encryptData } from "../../../utils/crypto";
 import { badRequest, created } from "../../../utils/httpStatusCodes";
 import checkKeyStrength from "../checkKeyStrength";
+import { prisma } from "../../../utils/prisma";
 
 const createApplication = async ({
 	name,

@@ -10,6 +10,8 @@ import {
 } from "../../utils/httpStatusCodes";
 import createApplication from "../utils/business/createApplication";
 import generateToken from "../utils/business/generateToken";
+import { prisma } from "../../utils/prisma";
+
 const addApplicationController = async (
 	req: Request & { application: AuthApplication; user: AuthUser },
 	res: Response

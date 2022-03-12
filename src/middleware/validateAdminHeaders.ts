@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import { internalError, unAuthorized } from "../utils/httpStatusCodes";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import fs from "fs";
-import path from "path";
 import { prisma } from "../utils/prisma";
 import { verifyAccessToken } from "../utils/jwt";
 

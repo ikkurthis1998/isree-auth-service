@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import { v1 as uuid } from "uuid";
 import { AuthApplication } from "../../middleware/types";
@@ -9,6 +8,7 @@ import {
 	unAuthorized
 } from "../../utils/httpStatusCodes";
 import getUser from "../utils/user/getUser";
+import { prisma } from "../../utils/prisma";
 
 const inviteUserController = async (
 	req: Request & { application: AuthApplication },
