@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import userRouter from "./routes/user";
 import adminRouter from "./routes/admin";
 import businessRouter from "./routes/business";
+import swaggerUi from "swagger-ui-express";
+
 dotenv.config();
 
 const app = express();
@@ -17,6 +19,8 @@ if (!port) {
 	app.listen(port, async () => {
 		console.log(`Server is running at ${port}`);
 	});
+
+	// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 	app.get("/", (req, res) => {
 		res.send("Hello World");

@@ -25,7 +25,7 @@ model User {
   phoneVerified  Boolean       @default(false)
   roles          UserRole[]
   profilePicture String?
-  business       Business?     @relation(fields: [businessId], references: [id])
+  business       Business?     @relation(fields: [businessId], references: [id], onDelete: SetNull)
   businessId     String?
   applications   Application[]
   lastSignin     DateTime?
@@ -37,7 +37,7 @@ model User {
 model UserRole {
   id        String   @id @default(uuid())
   role      Role
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,9 +69,9 @@ model Invite {
   id            String       @id @default(uuid())
   inviteType    InviteType
   role          Role
-  business      Business     @relation(fields: [businessId], references: [id])
+  business      Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId    String
-  application   Application  @relation(fields: [applicationId], references: [id])
+  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String
   email         String
   code          String       @unique @default(cuid())
@@ -99,7 +99,7 @@ model Application {
   appData    String
   token      String?    @unique
   users      User[]
-  business   Business   @relation(fields: [businessId], references: [id])
+  business   Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
   businessId String
   activities Activity[]
   invites    Invite[]
@@ -116,9 +116,9 @@ enum AppType {
 model Activity {
   id            String       @id @default(uuid())
   type          ActivityType
-  user          User         @relation(fields: [userId], references: [id])
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
-  application   Application  @relation(fields: [applicationId], references: [id])
+  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String
   data          String
   createdAt     DateTime     @default(now())

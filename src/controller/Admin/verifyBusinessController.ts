@@ -10,6 +10,7 @@ import {
 import { prisma } from "../../utils/prisma";
 import createApplication from "../utils/business/createApplication";
 import generateToken from "../utils/business/generateToken";
+import { generateDashboardName } from "./utils/generateDashboardName";
 
 const verifyBusinessController = async (req: Request, res: Response) => {
 	const functionName = "verifyBusinessController";
@@ -44,7 +45,7 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 		}
 
 		const { status, message, data } = await createApplication({
-			name: `${businessToBeVerified.code}_dashboard`,
+			name: generateDashboardName(businessToBeVerified.name),
 			type: "DASHBOARD",
 			key: appKey,
 			businessId: businessToBeVerified.id,
@@ -69,7 +70,7 @@ const verifyBusinessController = async (req: Request, res: Response) => {
 			traceId
 		});
 
-		const updatedApplication = await prisma.application.update({
+		await prisma.application.update({
 			where: {
 				id: application.id
 			},

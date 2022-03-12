@@ -15,6 +15,7 @@ import { Application, User } from "@prisma/client";
 import getUser from "../utils/user/getUser";
 import createApplication from "../utils/business/createApplication";
 import generateToken from "../utils/business/generateToken";
+import { generateDashboardName } from "./utils/generateDashboardName";
 
 const createFirstBusinessAndUser = async (req: Request, res: Response) => {
 	const functionName = "createFirstBusinessAndUser";
@@ -81,7 +82,7 @@ const createFirstBusinessAndUser = async (req: Request, res: Response) => {
 		});
 
 		const { status, message, data } = await createApplication({
-			name: `${newBusiness.code}_dashboard`,
+			name: generateDashboardName(newBusiness.name),
 			type: "DASHBOARD",
 			key: appKey,
 			businessId: newBusiness.id,
