@@ -20,11 +20,10 @@ const addApplicationController = async (
 	const traceId = uuid();
 	try {
 		const { user, application } = req;
+		
+		const userRoles = user.roles.map(role => role.role);
 
-		if (
-			!user.roles.includes("ADMIN") &&
-			!user.roles.includes("DEVELOPER")
-		) {
+		if (!userRoles.includes("ADMIN") && !userRoles.includes("DEVELOPER")) {
 			console.log(
 				`${functionName} - ${traceId} - ${unAuthorized} - Unauthorized - Unauthorized`
 			);

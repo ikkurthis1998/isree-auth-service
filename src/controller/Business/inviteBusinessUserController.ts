@@ -8,14 +8,20 @@ import {
 } from "../../utils/httpStatusCodes";
 import getUser from "../utils/user/getUser";
 import { prisma } from "../../utils/prisma";
+import { AuthApplication, AuthUser } from "../../middleware/types";
 
-const inviteBusinessUser = async (req: Request, res: Response) => {
+const inviteBusinessUser = async (
+	req: Request & { application: AuthApplication; user: AuthUser },
+	res: Response
+) => {
 	const functionName = "inviteBusinessUser";
 	const traceId = uuid();
 	try {
 		const { user, application } = req as any;
 
-		if (!user.roles.includes("ADMIN")) {
+		const userRoles = user.roles.map((role) => role.role);
+
+		if (!userRoles.includes("ADMIN")) {
 			console.log(
 				`${functionName} - ${traceId} - ${unAuthorized} - Unauthorized - Unauthorized`
 			);

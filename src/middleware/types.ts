@@ -1,7 +1,7 @@
-import { Application, Business, User } from "@prisma/client";
+import { Application, Business, User, UserRole } from "@prisma/client";
 
 export interface AuthUser extends User {
-	roles: string[];
+	roles: UserRole[];
 }
 
 export interface AuthApplication extends Application {
