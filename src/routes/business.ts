@@ -7,6 +7,7 @@ import validateHeaders from "../middleware/validateHeaders";
 import addApplicationController from "../controller/Business/addApplicationController";
 import inviteBusinessUser from "../controller/Business/inviteBusinessUserController";
 import getApplicationsController from "../controller/Business/getApplicationsController";
+import { authenticateController } from "../controller/Business/authenticateController";
 
 const businessRouter = express.Router();
 
@@ -29,5 +30,10 @@ businessRouter.post(
 );
 
 businessRouter.post("/user/invite", validateHeaders, inviteBusinessUser);
+
+businessRouter.post(
+	"/user/authenticate",
+	authenticateController
+)
 
 export default businessRouter;
